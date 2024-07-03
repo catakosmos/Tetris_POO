@@ -126,7 +126,7 @@ public class GameBoardPanel extends JPanel implements ActionListener {        //
         initBoard();
     }
 
-    // adjusting game level
+    // ajusta la resolucion del temporizador basada en la puntuacion actual
     private void setResolution() {
         switch (currentScore / 10) {
             case 10:
@@ -168,14 +168,14 @@ public class GameBoardPanel extends JPanel implements ActionListener {        //
 
     }
 
-    // initialize game board
+    // inicializa el tablero vacío
     private void initBoard() {
         for (int i = 0; i < BoardWidth * BoardHeight; i++) {
             gameBoard[i] = Tetrominoes.NO_BLOCK;
         }
     }
 
-    // timer callback
+    // maneja eventos del temporizador, avanza el bloque actual o genera uno nuevo si el otro ya cayó
     @Override
     public void actionPerformed(ActionEvent e) {
         if (isFallingDone) {
@@ -186,6 +186,7 @@ public class GameBoardPanel extends JPanel implements ActionListener {        //
         }
     }
 
+    // iniciar el juego
     public void start() {
         if (isPaused) {
             return;
@@ -200,6 +201,7 @@ public class GameBoardPanel extends JPanel implements ActionListener {        //
         timer.start();
     }
 
+    // pausa o reanuda el juego
     public void pause() {
         if (!isStarted) {
             return;
@@ -215,7 +217,7 @@ public class GameBoardPanel extends JPanel implements ActionListener {        //
         repaint();
     }
 
-    // calculates actual size of tetromino on screen
+    // calcula el tamaño de un bloque
     private int blockWidth() {
         return (int) getSize().getWidth() / BoardWidth;
     }
@@ -224,11 +226,12 @@ public class GameBoardPanel extends JPanel implements ActionListener {        //
         return (int) getSize().getHeight() / BoardHeight;
     }
 
-    // current tetromino position in array (atom)
+    // devuelve la posicion actual de la pieza en el tablero
     Tetrominoes curTetrominoPos(int x, int y) {
         return gameBoard[(y * BoardWidth) + x];
     }
 
+    // rendering tablero
     @Override
     public void paint(Graphics g) {
 
@@ -250,7 +253,7 @@ public class GameBoardPanel extends JPanel implements ActionListener {        //
         Dimension size = getSize();
         int boardTop = (int) size.getHeight() - BoardHeight * blockHeight();
 
-        // rendering - shadow of tetromino
+        // rendering - sombra de la pieza (indica donde caerá)
         int tempY = curY;
         while (tempY > 0) {
             if (!atomIsMovable(curBlock, curX, tempY - 1, false))
@@ -264,7 +267,7 @@ public class GameBoardPanel extends JPanel implements ActionListener {        //
                     true);
         }
 
-        // rendering - game board
+        // rendering - tablero
         for (int i = 0; i < BoardHeight; i++) {
             for (int j = 0; j < BoardWidth; j++) {
                 Tetrominoes shape = curTetrominoPos(j, BoardHeight - i - 1);
@@ -274,7 +277,7 @@ public class GameBoardPanel extends JPanel implements ActionListener {        //
         }
 
 
-        // rendering - current tetromino
+        // rendering - pieza actual
         if (curBlock.getShape() != Tetrominoes.NO_BLOCK) {
             for (int i = 0; i < 4; i++) {
                 int x = curX + curBlock.getX(i);
@@ -286,6 +289,7 @@ public class GameBoardPanel extends JPanel implements ActionListener {        //
 
     }
 
+    // dibuja una pieza en la pantalla
     private void drawTetromino(Graphics g, int x, int y, Tetrominoes bs, boolean isShadow) {
         Color curColor = colorTable[bs.ordinal()];
 
@@ -298,6 +302,7 @@ public class GameBoardPanel extends JPanel implements ActionListener {        //
         }
     }
 
+    // elimina las lineas del tablero y ajusta la puntuacion y el nivel
     private void removeFullLines() {
         int fullLines = 0;
 
@@ -329,9 +334,8 @@ public class GameBoardPanel extends JPanel implements ActionListener {        //
         }
 
     }
-
-    // true - actual tetromino pos
-    // flase - shadow pos
+    
+    // verifica si la pieza se puede mover a una nueva posicion
     private boolean atomIsMovable(Tetromino chkBlock, int chkX, int chkY, boolean flag) {
         for (int i = 0; i < 4; i++) {
             int x = chkX + chkBlock.getX(i);
@@ -353,10 +357,12 @@ public class GameBoardPanel extends JPanel implements ActionListener {        //
         return true;
     }
 
+    // verifica si se puede mover la pieza
     private boolean isMovable(Tetromino chkBlock, int chkX, int chkY) {
         return atomIsMovable(chkBlock, chkX, chkY, true);
     }
 
+    // genera una nueva pieza
     private void newTetromino() {
         curBlock.setRandomShape();
         curX = BoardWidth / 2 + 1;
@@ -370,6 +376,7 @@ public class GameBoardPanel extends JPanel implements ActionListener {        //
         }
     }
 
+    // fija la pieza en su posición
     private void tetrominoFixed() {
         for (int i = 0; i < 4; i++) {
             int x = curX + curBlock.getX(i);
@@ -384,12 +391,14 @@ public class GameBoardPanel extends JPanel implements ActionListener {        //
         }
     }
 
+    // hace que la pieza avance una linea hacia abajo
     private void advanceOneLine() {
         if (!isMovable(curBlock, curX, curY - 1)) {
             tetrominoFixed();
         }
     }
 
+    // hace que la pieza caiga al fondo
     private void advanceToEnd() {
         int tempY = curY;
         while (tempY > 0) {
@@ -400,6 +409,7 @@ public class GameBoardPanel extends JPanel implements ActionListener {        //
         tetrominoFixed();
     }
 
+    // muestra la puntuacion y finaliza el juego, guarda la puntuacion maxima si es necesario
     private void GameOver(int dbScore) {
         int maxScore = readDB();
         String showD = "";
@@ -415,6 +425,7 @@ public class GameBoardPanel extends JPanel implements ActionListener {        //
         start();
     }
 
+    // lee la puntuacion maxima
     private int readDB() {
         try {
             BufferedReader inputStream = new BufferedReader(new FileReader("Tetris.score"));
@@ -428,6 +439,7 @@ public class GameBoardPanel extends JPanel implements ActionListener {        //
         }
     }
 
+    // escribe la nueva puntuacion maxima
     private void writeDB(int dbScore) {
         try {
             File UIFile = new File("Tetris.score");
