@@ -17,56 +17,60 @@ import  javax.swing.UIManager;
 
 import com.salifm.tetris.Tetromino.Tetrominoes;
 
-public class GameBoardPanel extends JPanel implements ActionListener {
-    private static final int BoardWidth = 10;    // game board x size
-    private static final int BoardHeight = 22;    // game board y size
+public class GameBoardPanel extends JPanel implements ActionListener {        // maneja eventos de acción
+    private static final int BoardWidth = 10;    // tamaño horizontal del tablero
+    private static final int BoardHeight = 22;    // tamaño vertical del tablero
 
-    // game status & timer
+    // Estado de la jugada y temporizador
     private Timer timer;
     private boolean isFallingDone = false;
     private boolean isStarted = false;
     private boolean isPaused = false;
-    private int currentScore = 0; // removed lines == score
+    private int currentScore = 0; 
 
-    // position of current block
+    // Posicion de la pieza actual
     private int curX = 0;
     private int curY = 0;
 
-    // current tetromino
+    // Tipo de pieza actual
     private Tetromino curBlock;
 
-    // logical game block
+    // Tablero de juego y color de las piezas
     private Tetrominoes[] gameBoard;
     private Color[] colorTable;
 
-    // adjusting game status
+    // Ajuste del estado del juego
     private String currentStatus;
     private String currentLevel;
     private int currentTimerResolution;
 
     private GameWindow tetrisFrameD;
 
-
+// constructor que inicializa el panel del tablero del juego
     public GameBoardPanel(GameWindow tetrisFrame, int timerResolution) {
 
-        setFocusable(true);
-        setBackground(new Color(0, 30, 30));
+        setFocusable(true);                            // hace que el panel sea enfocable para poder recibir eventos de teclado
+        setBackground(new Color(0, 30, 30));           // color del fondo
         curBlock = new Tetromino();
         timer = new Timer(timerResolution, this);
-        timer.start();    // activate timer
+        timer.start();                                 // inicia el temporizador
         currentTimerResolution = timerResolution;
 
         gameBoard = new Tetrominoes[BoardWidth * BoardHeight];
 
-        // colour of tetrominoes
+        // Define los colores de las piezas
         colorTable = new Color[]{
-                new Color(0, 0, 0), new Color(164, 135, 255),
-                new Color(255, 128, 0), new Color(255, 0, 0),
-                new Color(32, 128, 255), new Color(255, 0, 255),
-                new Color(255, 255, 0), new Color(0, 255, 0)
+                new Color(0, 0, 0),            // Color para NO_BLOCK             
+                new Color(0, 255, 255),        // Color para I (celeste)
+                new Color(0, 0, 255),          // Color para J (azul)
+                new Color(255, 165, 0),        // Color para L (naranja)
+                new Color(255, 255, 0),        // Color para O (amarillo)
+                new Color(0, 255, 0),          // Color para S (verde)
+                new Color(128, 0, 128),        // Color para T (morado)
+                new Color(255, 0, 0)           // Color para Z (rojo)
         };
 
-        // keyboard listener
+        // Captura teclas de entrada
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -124,8 +128,6 @@ public class GameBoardPanel extends JPanel implements ActionListener {
 
     // adjusting game level
     private void setResolution() {
-        // fix me later! it's lame :P"
-
         switch (currentScore / 10) {
             case 10:
                 currentTimerResolution = 100;
