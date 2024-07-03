@@ -9,49 +9,49 @@ public class Tetromino {
 
     ;
 
-    private Tetrominoes tetrominoes;
-    private int coords[][];                // current shape of a tetromino
-    private int tetrominoTable[][][];
+    private Tetrominoes tetrominoes;                       // almacena el tipo actual de pieza
+    private int coords[][];                                // forma actual de la pieza
+    private int tetrominoTable[][][];                      // tabla que almacena las coordenadas de todas las formas posibles
 
+    // CONSTRUCTOR 
     public Tetromino() {
         coords = new int[4][2];
-        tetrominoTable = new int[][][]{
-                {{0, 0}, {0, 0}, {0, 0}, {0, 0}},        // NO_BLOCK
-                {{0, -1}, {0, 0}, {-1, 0}, {-1, 1}},    // Z_SHAPE
-                {{0, -1}, {0, 0}, {1, 0}, {1, 1}},    // S_SHAPE
-                {{0, -1}, {0, 0}, {0, 1}, {0, 2}},    // I_SHAPE
-                {{-1, 0}, {0, 0}, {1, 0}, {0, 1}},    // T_SHAPE
-                {{0, 0}, {1, 0}, {0, 1}, {1, 1}},    // O_SHAPE
-                {{-1, -1}, {0, -1}, {0, 0}, {0, 1}},    // L_SHAPE
-                {{1, -1}, {0, -1}, {0, 0}, {0, 1}}    // J_SHAPE
+        tetrominoTable = new int[][][]{        
+                {{0, 0}, {0, 0}, {0, 0}, {0, 0}},         // NO_BLOCK
+                {{0, -1}, {0, 0}, {-1, 0}, {-1, 1}},      // Z_SHAPE
+                {{0, -1}, {0, 0}, {1, 0}, {1, 1}},        // S_SHAPE
+                {{0, -1}, {0, 0}, {0, 1}, {0, 2}},        // I_SHAPE
+                {{-1, 0}, {0, 0}, {1, 0}, {0, 1}},        // T_SHAPE
+                {{0, 0}, {1, 0}, {0, 1}, {1, 1}},         // O_SHAPE
+                {{-1, -1}, {0, -1}, {0, 0}, {0, 1}},      // L_SHAPE
+                {{1, -1}, {0, -1}, {0, 0}, {0, 1}}        // J_SHAPE
         };
 
         setShape(Tetrominoes.NO_BLOCK);
     }
 
-    // set tetromino shape
-    public void setShape(Tetrominoes tetromino) {
-
-        for (int i = 0; i < coords.length; i++) {
+        // METODOS para establecer formas
+    public void setShape(Tetrominoes tetromino) {                            
+        for (int i = 0; i < coords.length; i++) {                
             for (int j = 0; j < coords[i].length; j++) {
-                coords[i][j] = tetrominoTable[tetromino.ordinal()][i][j];
+                coords[i][j] = tetrominoTable[tetromino.ordinal()][i][j];    // establece las coordenadas de la pieza actual basado en el tipo proporcionado
             }
         }
 
         tetrominoes = tetromino;
     }
 
-    public void setRandomShape() {
+    public void setRandomShape() {                        // establece una forma aleatoria para la pieza
         Random r = new Random();
         int x = Math.abs(r.nextInt()) % 7 + 1;
         setShape(Tetrominoes.values()[x]);
     }
 
-    public Tetrominoes getShape() {
+    public Tetrominoes getShape() {                        // devuelve el tipo de pieza actual
         return tetrominoes;
     }
 
-    // coordinate transform functions
+    // METODOS para coordenadas
     public void setX(int idx, int x) {
         coords[idx][0] = x;
     }
@@ -68,6 +68,7 @@ public class Tetromino {
         return coords[idx][1];
     }
 
+    // METODOS para mínimas coordenadas
     public int minX() {
         int ret = 0;
         for (int i = 0; i < coords.length; i++) {
@@ -84,7 +85,7 @@ public class Tetromino {
         return ret;
     }
 
-    // rotate a tetromino
+    // ROTACIONES
     public Tetromino rotateLeft() {
         if (tetrominoes == Tetrominoes.O_SHAPE) {
             return this;
