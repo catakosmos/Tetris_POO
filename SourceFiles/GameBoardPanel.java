@@ -1,132 +1,105 @@
 package SourceFiles;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.io.*;
+import javafx.animation.AnimationTimer;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.util.Duration;
 
-import javax.swing.JPanel;
-import javax.swing.Timer;
-import javax.swing.JOptionPane;
-import  javax.swing.UIManager;
+public class GameBoardPanel extends Canvas {
 
-import SourceFiles.Tetromino.Tetrominoes;
+    private static final int BoardWidth = 10;
+    private static final int BoardHeight = 22;
 
-public class GameBoardPanel extends JPanel implements ActionListener {        // maneja eventos de acción
-    private static final int BoardWidth = 10;    // tamaño horizontal del tablero
-    private static final int BoardHeight = 22;    // tamaño vertical del tablero
-
-    // Estado de la jugada y temporizador
-    private Timer timer;
+    private Timeline timeline;
     private boolean isFallingDone = false;
     private boolean isStarted = false;
     private boolean isPaused = false;
     private int currentScore = 0;
 
-    // Posicion de la pieza actual
     private int curX = 0;
     private int curY = 0;
 
-    // Tipo de pieza actual
     private Tetromino curBlock;
 
-    // Tablero de juego y color de las piezas
-    private Tetrominoes[] gameBoard;
+    private Tetromino.Tetrominoes[] gameBoard;
     private Color[] colorTable;
 
-    // Ajuste del estado del juego
     private String currentStatus;
-    private String currentLevel;
     private int currentTimerResolution;
 
-    private GameWindow tetrisFrameD;
+    private GameWindow tetrisFrame;
 
-// constructor que inicializa el panel del tablero del juego
     public GameBoardPanel(GameWindow tetrisFrame, int timerResolution) {
-
-        setFocusable(true);                            // hace que el panel sea enfocable para poder recibir eventos de teclado
-        setBackground(new Color(0, 30, 30));           // color del fondo
+        super(400, 800);  // Adjust canvas size as needed
         curBlock = new Tetromino();
-        timer = new Timer(timerResolution, this);
-        timer.start();                                 // inicia el temporizador
+        timeline = new Timeline(new KeyFrame(Duration.millis(timerResolution), e -> actionPerformed()));
+        timeline.setCycleCount(Timeline.INDEFINITE);
         currentTimerResolution = timerResolution;
 
-        gameBoard = new Tetrominoes[BoardWidth * BoardHeight];
+        gameBoard = new Tetromino.Tetrominoes[BoardWidth * BoardHeight];
 
-        // Define los colores de las piezas
         colorTable = new Color[]{
-                new Color(0, 0, 0),            // Color para NO_BLOCK
-                new Color(0, 255, 255),        // Color para I (celeste)
-                new Color(0, 0, 255),          // Color para J (azul)
-                new Color(255, 165, 0),        // Color para L (naranja)
-                new Color(255, 255, 0),        // Color para O (amarillo)
-                new Color(0, 255, 0),          // Color para S (verde)
-                new Color(128, 0, 128),        // Color para T (morado)
-                new Color(255, 0, 0)           // Color para Z (rojo)
+                Color.BLACK,      // Color for NO_BLOCK
+                Color.CYAN,       // Color for I
+                Color.BLUE,       // Color for J
+                Color.ORANGE,     // Color for L
+                Color.YELLOW,     // Color for O
+                Color.GREEN,      // Color for S
+                Color.PURPLE,     // Color for T
+                Color.RED         // Color for Z
         };
 
-        // Captura teclas de entrada
-        addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (!isStarted || curBlock.getShape() == Tetrominoes.NO_BLOCK) {
-                    return;
-                }
+        setOnKeyPressed(this::handleKeyPress);
+        setFocusTraversable(true); // Permitir que el canvas tenga el foco
 
-                int keycode = e.getKeyCode();
-
-                if (keycode == 'p' || keycode == 'P') {
-                    pause();
-                    return;
-                }
-
-                if (isPaused) {
-                    return;
-                }
-
-                switch (keycode) {
-                    case 'a':
-                    case 'A':
-                    case KeyEvent.VK_LEFT:
-                        isMovable(curBlock, curX - 1, curY);
-                        break;
-                    case 'd':
-                    case 'D':
-                    case KeyEvent.VK_RIGHT:
-                        isMovable(curBlock, curX + 1, curY);
-                        break;
-                    case 'w':
-                    case 'W':
-                    case KeyEvent.VK_UP:
-                        isMovable(curBlock.rotateRight(), curX, curY);
-                        break;
-                    case 's':
-                    case 'S':
-                    case KeyEvent.VK_DOWN:
-                        advanceOneLine();
-                        break;
-                    case KeyEvent.VK_SPACE:
-                        advanceToEnd();
-                        break;
-                    case 'p':
-                    case 'P':
-                        pause();
-                        break;
-                }
-
-            }
-        });
-
-        tetrisFrameD = tetrisFrame;
+        this.tetrisFrame = tetrisFrame;
         initBoard();
+        requestFocus(); // Solicitar el foco para capturar eventos de teclado
     }
 
-    // ajusta la resolucion del temporizador basada en la puntuacion actual
+    private void handleKeyPress(KeyEvent event) {
+        if (!isStarted || curBlock.getShape() == Tetromino.Tetrominoes.NO_BLOCK) {
+            return;
+        }
+
+        KeyCode keycode = event.getCode();
+
+        if (keycode == KeyCode.P) {
+            pause();
+            return;
+        }
+
+        if (isPaused) {
+            return;
+        }
+
+        switch (keycode) {
+            case LEFT:
+                isMovable(curBlock, curX - 1, curY);
+                break;
+            case RIGHT:
+                isMovable(curBlock, curX + 1, curY);
+                break;
+            case UP:
+                isMovable(curBlock.rotateRight(), curX, curY);
+                break;
+            case DOWN:
+                advanceOneLine();
+                break;
+            case SPACE:
+                advanceToEnd();
+                break;
+            default:
+                break;
+        }
+    }
+
     private void setResolution() {
         switch (currentScore / 10) {
             case 10:
@@ -164,29 +137,24 @@ public class GameBoardPanel extends JPanel implements ActionListener {        //
                 break;
         }
 
-        timer.setDelay(currentTimerResolution);
-
+        timeline.getKeyFrames().set(0, new KeyFrame(Duration.millis(currentTimerResolution), e -> actionPerformed()));
     }
 
-    // inicializa el tablero vacío
     private void initBoard() {
         for (int i = 0; i < BoardWidth * BoardHeight; i++) {
-            gameBoard[i] = Tetrominoes.NO_BLOCK;
+            gameBoard[i] = Tetromino.Tetrominoes.NO_BLOCK;
         }
     }
 
-    // maneja eventos del temporizador, avanza el bloque actual o genera uno nuevo si el otro ya cayó
-    @Override
-    public void actionPerformed(ActionEvent e) {
+    private void actionPerformed() {
         if (isFallingDone) {
-            isFallingDone = !isFallingDone; // toggle status
+            isFallingDone = !isFallingDone;
             newTetromino();
         } else {
             advanceOneLine();
         }
     }
 
-    // iniciar el juego
     public void start() {
         if (isPaused) {
             return;
@@ -198,10 +166,9 @@ public class GameBoardPanel extends JPanel implements ActionListener {        //
         initBoard();
 
         newTetromino();
-        timer.start();
+        timeline.play();
     }
 
-    // pausa o reanuda el juego
     public void pause() {
         if (!isStarted) {
             return;
@@ -209,51 +176,42 @@ public class GameBoardPanel extends JPanel implements ActionListener {        //
 
         isPaused = !isPaused;
         if (isPaused) {
-            timer.stop();
+            timeline.pause();
         } else {
-            timer.start();
+            timeline.play();
         }
 
-        repaint();
+        draw();
     }
 
-    // calcula el tamaño de un bloque
     private int blockWidth() {
-        return (int) getSize().getWidth() / BoardWidth;
+        return (int) getWidth() / BoardWidth;
     }
 
     private int blockHeight() {
-        return (int) getSize().getHeight() / BoardHeight;
+        return (int) getHeight() / BoardHeight;
     }
 
-    // devuelve la posicion actual de la pieza en el tablero
-    Tetrominoes curTetrominoPos(int x, int y) {
+    private Tetromino.Tetrominoes curTetrominoPos(int x, int y) {
         return gameBoard[(y * BoardWidth) + x];
     }
 
-    // rendering tablero
-    @Override
-    public void paint(Graphics g) {
-
-        super.paint(g);
+    private void draw() {
+        GraphicsContext gc = getGraphicsContext2D();
+        gc.clearRect(0, 0, getWidth(), getHeight());
 
         if (!isPaused) {
             currentStatus = "Score: " + currentScore;
-            currentLevel = "Level: " + (currentScore / 10 + 1);
         } else {
             currentStatus = "PAUSED";
-            currentLevel = "";
         }
 
-        g.setColor(Color.WHITE);
-        g.setFont(new Font("Consolas", Font.PLAIN, 28));
-        g.drawString(currentStatus, 15, 35);
-        g.drawString(currentLevel, 15, 70);
+        gc.setFill(Color.WHITE);
+        gc.setFont(new Font("Consolas", 28));
+        gc.fillText(currentStatus, 15, 35);
 
-        Dimension size = getSize();
-        int boardTop = (int) size.getHeight() - BoardHeight * blockHeight();
+        int boardTop = (int) getHeight() - BoardHeight * blockHeight();
 
-        // rendering - sombra de la pieza (indica donde caerá)
         int tempY = curY;
         while (tempY > 0) {
             if (!atomIsMovable(curBlock, curX, tempY - 1, false))
@@ -263,46 +221,38 @@ public class GameBoardPanel extends JPanel implements ActionListener {        //
         for (int i = 0; i < 4; i++) {
             int x = curX + curBlock.getX(i);
             int y = tempY - curBlock.getY(i);
-            drawTetromino(g, 0 + x * blockWidth(), boardTop + (BoardHeight - y - 1) * blockHeight(), curBlock.getShape(),
-                    true);
+            drawTetromino(gc, 0 + x * blockWidth(), boardTop + (BoardHeight - y - 1) * blockHeight(), curBlock.getShape(), true);
         }
 
-        // rendering - tablero
         for (int i = 0; i < BoardHeight; i++) {
             for (int j = 0; j < BoardWidth; j++) {
-                Tetrominoes shape = curTetrominoPos(j, BoardHeight - i - 1);
-                if (shape != Tetrominoes.NO_BLOCK)
-                    drawTetromino(g, 0 + j * blockWidth(), boardTop + i * blockHeight(), shape, false);
+                Tetromino.Tetrominoes shape = curTetrominoPos(j, BoardHeight - i - 1);
+                if (shape != Tetromino.Tetrominoes.NO_BLOCK)
+                    drawTetromino(gc, 0 + j * blockWidth(), boardTop + i * blockHeight(), shape, false);
             }
         }
 
-
-        // rendering - pieza actual
-        if (curBlock.getShape() != Tetrominoes.NO_BLOCK) {
+        if (curBlock.getShape() != Tetromino.Tetrominoes.NO_BLOCK) {
             for (int i = 0; i < 4; i++) {
                 int x = curX + curBlock.getX(i);
                 int y = curY - curBlock.getY(i);
-                drawTetromino(g, 0 + x * blockWidth(), boardTop + (BoardHeight - y - 1) * blockHeight(),
-                        curBlock.getShape(), false);
+                drawTetromino(gc, 0 + x * blockWidth(), boardTop + (BoardHeight - y - 1) * blockHeight(), curBlock.getShape(), false);
             }
         }
-
     }
 
-    // dibuja una pieza en la pantalla
-    private void drawTetromino(Graphics g, int x, int y, Tetrominoes bs, boolean isShadow) {
+    private void drawTetromino(GraphicsContext gc, int x, int y, Tetromino.Tetrominoes bs, boolean isShadow) {
         Color curColor = colorTable[bs.ordinal()];
 
         if (!isShadow) {
-            g.setColor(curColor);
-            g.fillRect(x + 1, y + 1, blockWidth() - 2, blockHeight() - 2);
+            gc.setFill(curColor);
+            gc.fillRect(x + 1, y + 1, blockWidth() - 2, blockHeight() - 2);
         } else {
-            g.setColor(curColor.darker().darker());
-            g.fillRect(x + 1, y + 1, blockWidth() - 2, blockHeight() - 2);
+            gc.setFill(curColor.darker().darker());
+            gc.fillRect(x + 1, y + 1, blockWidth() - 2, blockHeight() - 2);
         }
     }
 
-    // elimina las lineas del tablero y ajusta la puntuacion y el nivel
     private void removeFullLines() {
         int fullLines = 0;
 
@@ -310,7 +260,7 @@ public class GameBoardPanel extends JPanel implements ActionListener {        //
             boolean isFull = true;
 
             for (int j = 0; j < BoardWidth; j++) {
-                if (curTetrominoPos(j, i) == Tetrominoes.NO_BLOCK) {
+                if (curTetrominoPos(j, i) == Tetromino.Tetrominoes.NO_BLOCK) {
                     isFull = false;
                     break;
                 }
@@ -328,21 +278,19 @@ public class GameBoardPanel extends JPanel implements ActionListener {        //
         if (fullLines > 0) {
             currentScore += fullLines;
             isFallingDone = true;
-            curBlock.setShape(Tetrominoes.NO_BLOCK);
+            curBlock.setShape(Tetromino.Tetrominoes.NO_BLOCK);
             setResolution();
-            repaint();
+            draw();
         }
-
     }
 
-    // verifica si la pieza se puede mover a una nueva posicion
     private boolean atomIsMovable(Tetromino chkBlock, int chkX, int chkY, boolean flag) {
         for (int i = 0; i < 4; i++) {
             int x = chkX + chkBlock.getX(i);
             int y = chkY - chkBlock.getY(i);
             if (x < 0 || x >= BoardWidth || y < 0 || y >= BoardHeight)
                 return false;
-            if (curTetrominoPos(x, y) != Tetrominoes.NO_BLOCK) {
+            if (curTetrominoPos(x, y) != Tetromino.Tetrominoes.NO_BLOCK) {
                 return false;
             }
         }
@@ -351,32 +299,29 @@ public class GameBoardPanel extends JPanel implements ActionListener {        //
             curBlock = chkBlock;
             curX = chkX;
             curY = chkY;
-            repaint();
+            draw();
         }
 
         return true;
     }
 
-    // verifica si se puede mover la pieza
     private boolean isMovable(Tetromino chkBlock, int chkX, int chkY) {
         return atomIsMovable(chkBlock, chkX, chkY, true);
     }
 
-    // genera una nueva pieza
     private void newTetromino() {
         curBlock.setRandomShape();
         curX = BoardWidth / 2 + 1;
         curY = BoardHeight - 1 + curBlock.minY();
 
         if (!isMovable(curBlock, curX, curY)) {
-            curBlock.setShape(Tetrominoes.NO_BLOCK);
-            timer.stop();
+            curBlock.setShape(Tetromino.Tetrominoes.NO_BLOCK);
+            timeline.stop();
             isStarted = false;
             GameOver(currentScore);
         }
     }
 
-    // fija la pieza en su posición
     private void tetrominoFixed() {
         for (int i = 0; i < 4; i++) {
             int x = curX + curBlock.getX(i);
@@ -391,14 +336,12 @@ public class GameBoardPanel extends JPanel implements ActionListener {        //
         }
     }
 
-    // hace que la pieza avance una linea hacia abajo
     private void advanceOneLine() {
         if (!isMovable(curBlock, curX, curY - 1)) {
             tetrominoFixed();
         }
     }
 
-    // hace que la pieza caiga al fondo
     private void advanceToEnd() {
         int tempY = curY;
         while (tempY > 0) {
@@ -409,51 +352,13 @@ public class GameBoardPanel extends JPanel implements ActionListener {        //
         tetrominoFixed();
     }
 
-    // muestra la puntuacion y finaliza el juego, guarda la puntuacion maxima si es necesario
     private void GameOver(int dbScore) {
-        int maxScore = readDB();
-        String showD = "";
-        if (dbScore > maxScore) {
-            writeDB(dbScore);
-            showD = String.format("%nCongratulations! %nNew max score: %d", dbScore);
-        } else {
-            showD = String.format("Score: %d %nMax score: %d", dbScore, maxScore);
-        }
-        UIManager.put("OptionPane.okButtonText", "new game");
-        JOptionPane.showMessageDialog(null, showD, "Game Over!", JOptionPane.OK_OPTION);
+        // Usar un diálogo de JavaFX para el Game Over
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+        alert.setTitle("Game Over!");
+        alert.setHeaderText(null);
+        alert.showAndWait();
         setResolution();
         start();
-    }
-
-    // lee la puntuacion maxima
-    private int readDB() {
-        try {
-            BufferedReader inputStream = new BufferedReader(new FileReader("Tetris.score"));
-            String dbMaxScore = inputStream.readLine();
-            inputStream.close();
-            return Integer.parseInt(dbMaxScore);
-        } catch (IOException e) {
-            return -1;
-        } catch (NumberFormatException e) {
-            return -1;
-        }
-    }
-
-    // escribe la nueva puntuacion maxima
-    private void writeDB(int dbScore) {
-        try {
-            File UIFile = new File("Tetris.score");
-            if (!UIFile.exists()) {
-                UIFile.createNewFile();
-            }
-            FileWriter filewriter = new FileWriter(UIFile.getAbsoluteFile());
-            BufferedWriter outputStream = new BufferedWriter(filewriter);
-            outputStream.write(String.valueOf(dbScore));
-            outputStream.newLine();
-            outputStream.write("This is database for Tetris game - https://github.com/salifm/Tetris");
-            outputStream.close();
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
     }
 }

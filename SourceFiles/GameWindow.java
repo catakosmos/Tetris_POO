@@ -1,24 +1,32 @@
 package SourceFiles;
 
-import java.awt.GridLayout;
-import javax.swing.JFrame;
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 
-public class GameWindow extends JFrame {
+public class GameWindow extends Application {
 
-    // Constructor
-    public GameWindow() {
-        setTitle("Tetris :D");
-        setSize(400, 814);
-        setResizable(false);
+    @Override
+    public void start(Stage primaryStage) {
+        primaryStage.setTitle("Tetris :D");
+        primaryStage.setResizable(false);
 
-        setLayout(new GridLayout(1, 2));                    // establecer layout de la ventana con una fila y 2 columnas 
+        GameBoardPanel gameBoard = new GameBoardPanel(this, 400);  // Pasar this (GameWindow) como referencia
 
-        GameBoardPanel gameBoard = new GameBoardPanel(this, 400);  // panel de tablero con tiempo de resolucion 400
-        add(gameBoard);
+        // Crear un contenedor StackPane y agregar GameBoardPanel como hijo
+        StackPane root = new StackPane();
+        root.getChildren().add(gameBoard);
+
+        primaryStage.setScene(new Scene(root));  // Usar el contenedor como raíz de la escena
         gameBoard.start();
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);        // operacion por defecto para cerrar la ventana
-        setLocationRelativeTo(null);                           // centra la ventana en la pantalla
-        setVisible(true);                                      // hace visible la ventana
+        primaryStage.setOnCloseRequest(event -> System.exit(0));  // Cerrar la aplicación al cerrar la ventana
+
+        primaryStage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }
