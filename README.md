@@ -11,8 +11,6 @@ El juego de Tetris implica varios elementos:
 
 ## ¿Cómo jugar?
 
-* Flechas `arriba` & `abajo`: ROTAR PIEZA
-* Flechas `derecha` & `izquierda`: MOVER PIEZA
+* Flecha `arriba (↑)`: ROTAR PIEZA
+* Flechas `derecha (→)` & `izquierda (←)`: MOVER PIEZA
 * Tecla `p`: PAUSA/REANUDAR
-
-## Capturas de pantalla del juego

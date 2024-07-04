@@ -130,8 +130,14 @@
     </header>
     <div class="container">
         <section id="descripcion">
+			<p>Integrantes:
+			<ul>
+				<li> Catalina González</li>
+				<li> Patricio Guzman</li>
+			</ul>
+			</p>
             <h2>Descripción del Problema</h2>
-            <p>El juego Tetris aborda la necesidad humana de entretenimiento interactivo y desafío mental. A través de su mecánica de juego simple pero altamente adictiva, Tetris ofrece a los jugadores una experiencia que estimula la concentración, la coordinación mano-ojo y la toma de decisiones rápidas. Al enfrentarse a bloques que caen aleatoriamente, los jugadores deben rotar y manipular las piezas para completar líneas horizontales y evitar que la pantalla se llene. Esta dinámica no solo entretiene, sino que también proporciona un sentido de logro instantáneo cuando se completan líneas y se avanza en niveles más difíciles. Tetris, desde su creación, ha sido reconocido como un juego que no solo divierte, sino que también desafía y mejora las habilidades cognitivas de los jugadores de todas las edades. </p>
+            <p>Tetris ofrece entretenimiento interactivo y desafío mental con su mecánica simple pero adictiva. Estimula la concentración, la coordinación mano-ojo y la toma de decisiones rápidas al manipular bloques para completar líneas y evitar que la pantalla se llene. Este juego no solo divierte, sino que también mejora habilidades cognitivas y proporciona un sentido de logro instantáneo. Desde su creación, ha sido reconocido por su impacto positivo en jugadores de todas las edades. </p>
         </section>
 
         <section id="analisis">
@@ -166,7 +172,7 @@
                 <p><strong>Descripción:</strong> El jugador puede rotar la pieza actual en sentido horario o antihorario.
 					<br><strong>Actor:</strong> Jugador.
 					<br><strong>Precondición:</strong> El juego Tetris está en curso y una pieza está en movimiento, el jugador tiene control sobre la pieza.
-					<br><strong>Flujo Principal:</strong> El jugador utiliza la tecla de flecha hacia arriba (↑) o la barra espaciadora para rotar la pieza en sentido horario. La pieza tetrominó cambia su orientación en incrementos de 90 grados cada vez que se presiona la tecla. La rotación se realiza dentro del espacio disponible del tablero y puede ajustarse para encajar mejor en los espacios vacíos.
+					<br><strong>Flujo Principal:</strong> El jugador utiliza la tecla de flecha hacia arriba (↑) para rotar la pieza en sentido horario. La pieza tetrominó cambia su orientación en incrementos de 90 grados cada vez que se presiona la tecla. La rotación se realiza dentro del espacio disponible del tablero y puede ajustarse para encajar mejor en los espacios vacíos.
 					<br><strong>Postcondiciones:</strong> La pieza cambia su orientación de manera correcta y se ajusta dentro del tablero según las acciones del jugador.
 				</p>
                 <div class="image-container">
@@ -180,8 +186,8 @@
                 <p><strong>Descripción:</strong> Cuando una línea se completa, se elimina y se incrementa el puntaje del jugador.
 					<br><strong>Actor:</strong> Sistema.
 					<br><strong>Precondición:</strong> Durante el juego, una o más líneas horizontales están completamente llenas de tetrominós, el juego está en curso y las líneas completas deben ser identificadas y eliminadas.
-					<br><strong>Flujo Principal:</strong> Cuando se completa una línea horizontal con tetrominós, se identifica automáticamente como lista para eliminarse. La línea completa se elimina del tablero, y todas las piezas superiores a esta línea caen una posición hacia abajo para llenar el espacio vacío. Se otorgan puntos al jugador por cada línea eliminada, y el juego continúa con la siguiente pieza en juego.
-					<br><strong>Postcondiciones:</strong> Las líneas completas se eliminan correctamente del tablero. El juego actualiza la puntuación del jugador y continúa sin interrupciones.
+					<br><strong>Flujo Principal:</strong> Cuando se completa una línea horizontal con tetrominós, se identifica automáticamente como lista para eliminarse. La línea completa se elimina del tablero, y todas las piezas superiores a esta línea caen una posición hacia abajo para llenar el espacio vacío. El juego continúa con la siguiente pieza en juego.
+					<br><strong>Postcondiciones:</strong> Las líneas completas se eliminan correctamente del tablero. El juego continúa sin interrupciones.
 				</p>
                 <div class="image-container">
                     <img src="eliminar-lineas.png" alt="Captura de pantalla: Eliminación de líneas">
@@ -194,20 +200,22 @@
             <h2>Diseño</h2>
             <h3>Diagrama de Clases</h3>
             <div class="image-container">
-                <img src="diagrama-clases.png" alt="Diagrama de Clases">
-                <p>Diagrama de clases que muestra la estructura del juego de Tetris.</p>
+                <img src="UML_Tetris.drawio.png" alt="Diagrama de Clases">
+                <p>La clase GameBoardPanel tiene una relación con GameWindow y Tetromino, y maneja la lógica principal del juego, mientras que GameWindow gestiona la configuración y visualización de la ventana del juego, Tetromino maneja las formas y coordenadas de las piezas del juego.<br></p>
             </div>
             
-            <h3>Diagrama de Secuencia (Mover Pieza)</h3>
+            <h3>Diagrama de Secuencia (Rotar Pieza)</h3>
             <div class="image-container">
-                <img src="diagrama-secuencia.png" alt="Diagrama de Secuencia">
-                <p>Diagrama de secuencia que muestra la interacción para mover una pieza en el juego.</p>
+                <img src="diagrama.drawio.png" alt="Diagrama de Secuencia">
             </div>
-        </section>
-
-        <section id="implementacion">
-            <h2>Implementación</h2>
-            <p>El código fuente está documentado con comentarios que siguen las convenciones de Javadoc para facilitar la comprensión y la generación automática de documentación.</p>
+			<ul>
+				<br><li> Jugador -> GameBoardPanel: El jugador presiona la tecla de flecha hacia arriba (↑) para rotar la pieza.</li>
+				<br><li> GameBoardPanel -> Tetromino: Se llama al método keyPressed() en el GameBoardPanel, donde se verifica si el juego está en curso y se ejecuta la siguiente acción.</li>
+				<br><li> GameBoardPanel -> Tetromino: Luego se llama al método isMovable() para verificar si la pieza puede moverse a la nueva posición después de la rotación.</li>
+				<br><li> Tetromino -> GameBoardPanel: Si la rotación es posible, se realiza la rotación efectiva llamando a rotateRight() en el objeto Tetromino.</li>
+				<br><li> GameBoardPanel -> Tetromino: Después de la rotación, se actualiza la interfaz de usuario llamando al método actualizar() en el GameBoardPanel para reflejar visualmente la nueva orientación de la pieza en el tablero.</li>
+				<br><li> GameBoardPanel -> Interfaz de Usuario: Este último paso implica una interacción implícita donde la interfaz de usuario se actualiza visualmente para mostrar la nueva orientación de la pieza rotada.</li><br>
+			</ul>
         </section>
 
         <section id="pruebas">
@@ -230,8 +238,13 @@
                 </div>
             </div>
             
-            <h3>Dificultades y Bugs</h3>
-            <p>Se encontraron dificultades en el manejo de colisiones y ajuste de velocidades de caída de las piezas. Actualmente, se trabaja en resolver problemas de desalineación visual de piezas al rotar en ciertos ángulos.</p>
+            <h3>Dificultades</h3>
+            <p>
+			<ul>
+			<li>Implementación de las Rotaciones de Tetrominos: Una de las dificultades clave es la implementación precisa de las rotaciones de los Tetrominos, asegurando que cada pieza gire correctamente sin colisionar con otras piezas o los bordes del tablero. El código debe calcular las nuevas coordenadas tras la rotación y verificar si hay colisiones, revirtiendo la rotación si es necesario. Este proyecto aborda esta dificultad con métodos específicos para rotar piezas y verificaciones de colisión que aseguran rotaciones fluidas y válidas.</li>
+			<li>Gestión de la Interfaz Gráfica del Usuario: Diseñar una GUI responsiva para el juego es un desafío significativo. La GUI debe actualizarse en tiempo real para reflejar el movimiento de las piezas y las líneas completadas, sin retrasos ni parpadeos. Además, debe ser estéticamente agradable y responder de manera inmediata a las acciones del usuario. El proyecto utiliza JFrame y GridLayout para gestionar la ventana del juego y GameBoardPanel para dibujar y actualizar el tablero en tiempo real.</li>
+			</ul>
+			</p>
         </section>
     </div>
 
