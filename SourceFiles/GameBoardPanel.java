@@ -133,7 +133,7 @@ public class GameBoardPanel extends Canvas {
                 currentTimerResolution = 370;
                 break;
             case 0:
-                currentTimerResolution = 370;
+                currentTimerResolution = 3700;
                 break;
         }
 
