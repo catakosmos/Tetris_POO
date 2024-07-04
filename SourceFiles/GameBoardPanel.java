@@ -36,7 +36,7 @@ public class GameBoardPanel extends Canvas {
     private GameWindow tetrisFrame;
 
     public GameBoardPanel(GameWindow tetrisFrame, int timerResolution) {
-        super(400, 800);  // Adjust canvas size as needed
+        super(400, 800);  // establece el tamaño del canvas
         curBlock = new Tetromino();
         timeline = new Timeline(new KeyFrame(Duration.millis(timerResolution), e -> actionPerformed()));
         timeline.setCycleCount(Timeline.INDEFINITE);
@@ -133,7 +133,7 @@ public class GameBoardPanel extends Canvas {
                 currentTimerResolution = 370;
                 break;
             case 0:
-                currentTimerResolution = 3700;
+                currentTimerResolution = 400;
                 break;
         }
 
@@ -206,7 +206,7 @@ public class GameBoardPanel extends Canvas {
             currentStatus = "PAUSED";
         }
 
-        gc.setFill(Color.WHITE);
+        gc.setFill(Color.BLACK);
         gc.setFont(new Font("Consolas", 28));
         gc.fillText(currentStatus, 15, 35);
 
@@ -357,6 +357,7 @@ public class GameBoardPanel extends Canvas {
         javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
         alert.setTitle("Game Over!");
         alert.setHeaderText(null);
+        alert.setContentText("Puntuación obtenida: " + dbScore);
         alert.showAndWait();
         setResolution();
         start();
