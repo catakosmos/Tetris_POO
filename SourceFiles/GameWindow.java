@@ -1,4 +1,4 @@
-package com.salifm.tetris;
+package SourceFiles;
 
 import java.awt.GridLayout;
 import javax.swing.JFrame;

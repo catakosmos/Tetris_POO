@@ -1,4 +1,4 @@
-package com.salifm.tetris;
+package SourceFiles;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -15,7 +15,7 @@ import javax.swing.Timer;
 import javax.swing.JOptionPane;
 import  javax.swing.UIManager;
 
-import com.salifm.tetris.Tetromino.Tetrominoes;
+import SourceFiles.Tetromino.Tetrominoes;
 
 public class GameBoardPanel extends JPanel implements ActionListener {        // maneja eventos de acción
     private static final int BoardWidth = 10;    // tamaño horizontal del tablero
@@ -26,7 +26,7 @@ public class GameBoardPanel extends JPanel implements ActionListener {        //
     private boolean isFallingDone = false;
     private boolean isStarted = false;
     private boolean isPaused = false;
-    private int currentScore = 0; 
+    private int currentScore = 0;
 
     // Posicion de la pieza actual
     private int curX = 0;
@@ -60,7 +60,7 @@ public class GameBoardPanel extends JPanel implements ActionListener {        //
 
         // Define los colores de las piezas
         colorTable = new Color[]{
-                new Color(0, 0, 0),            // Color para NO_BLOCK             
+                new Color(0, 0, 0),            // Color para NO_BLOCK
                 new Color(0, 255, 255),        // Color para I (celeste)
                 new Color(0, 0, 255),          // Color para J (azul)
                 new Color(255, 165, 0),        // Color para L (naranja)
@@ -334,7 +334,7 @@ public class GameBoardPanel extends JPanel implements ActionListener {        //
         }
 
     }
-    
+
     // verifica si la pieza se puede mover a una nueva posicion
     private boolean atomIsMovable(Tetromino chkBlock, int chkX, int chkY, boolean flag) {
         for (int i = 0; i < 4; i++) {
