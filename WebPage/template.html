@@ -6,7 +6,7 @@
     <title>Proyecto Tetris</title>
 	<link rel="icon" href="favicon.ico" type="image/x-icon">
 	<link rel="shortcut icon" href="favicon.png" type="image/x-icon">
-
+	
     <style>
         body {
             font-family: 'Press Start 2P', cursive;
@@ -14,7 +14,7 @@
             color: #fff;
             margin: 0;
             padding: 20px;
-            animation: flicker 0.5s infinite alternate;
+            opacity: 1;
 			background-image: url('tetris.gif');			
         }
         @keyframes flicker {
@@ -162,7 +162,7 @@
 					<br><strong>Postcondiciones:</strong> La pieza se posiciona correctamente dentro del tablero según las acciones del jugador.
 				</p>
                 <div class="image-container">
-                    <img src="mover-pieza.png" alt="Captura de pantalla: Movimiento de pieza">
+                    <img src="moverr.png" alt="Captura de pantalla: Movimiento de pieza">
                     <p>Captura de pantalla mostrando la pieza moviéndose hacia la izquierda correctamente.</p>
                 </div>
             </div>
@@ -176,7 +176,7 @@
 					<br><strong>Postcondiciones:</strong> La pieza cambia su orientación de manera correcta y se ajusta dentro del tablero según las acciones del jugador.
 				</p>
                 <div class="image-container">
-                    <img src="rotar-pieza.png" alt="Captura de pantalla: Rotación de pieza">
+                    <img src="rotar.png" alt="Captura de pantalla: Rotación de pieza">
                     <p>Captura de pantalla de una pieza rotando sin colisiones.</p>
                 </div>
             </div>
@@ -190,7 +190,7 @@
 					<br><strong>Postcondiciones:</strong> Las líneas completas se eliminan correctamente del tablero. El juego continúa sin interrupciones.
 				</p>
                 <div class="image-container">
-                    <img src="eliminar-lineas.png" alt="Captura de pantalla: Eliminación de líneas">
+                    <img src="linea.png" alt="Captura de pantalla: Eliminación de líneas">
                     <p>Captura de pantalla mostrando la eliminación correcta de una línea completa.</p>
                 </div>
             </div>
@@ -222,21 +222,13 @@
             <h2>Pruebas</h2>
             <div class="case-study">
                 <h3>Resultados de Pruebas</h3>
-                <div class="image-container">
-                    <img src="prueba-movimiento.png" alt="Captura de pantalla: Prueba de movimiento">
-                    <p>Captura de pantalla mostrando la pieza moviéndose hacia la izquierda correctamente.</p>
-                </div>
-                
-                <div class="image-container">
-                    <img src="prueba-rotacion.png" alt="Captura de pantalla: Prueba de rotación">
-                    <p>Captura de pantalla de una pieza rotando sin colisiones.</p>
-                </div>
-                
-                <div class="image-container">
-                    <img src="prueba-eliminar-lineas.png" alt="Captura de pantalla: Prueba de eliminación de líneas">
-                    <p>Captura de pantalla mostrando la eliminación correcta de una línea completa.</p>
-                </div>
-            </div>
+				<div class="video-container">
+					<video width="480" height="640" controls loop>
+						<source src="gameplay.mp4" type="video/mp4">
+						Tu navegador no soporta el elemento de video.
+					</video>
+				</div>
+            </div>   
             
             <h3>Dificultades</h3>
             <p>
@@ -246,6 +238,25 @@
 			</ul>
 			</p>
         </section>
+		
+		<style>
+   
+			.video-container {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				margin-bottom: 20px;
+			}
+
+			.video-container video {
+				max-width: 100%; 
+				max-height: 100%; 
+				box-shadow: 0 0 5px rgba(0,0,0,0.2); 
+			}
+		</style>
+		<div class="download-button">
+            <a href="Tetris_POO-main.zip" download>Descargar Proyecto AQUI !!</a>
+        </div>
     </div>
 
     <footer>
