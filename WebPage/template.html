@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto Tetris</title>
+	<link rel="icon" href="favicon.ico" type="image/x-icon">
+	<link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+
+    <style>
+        body {
+            font-family: 'Press Start 2P', cursive;
+            background-color: #000;
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+            opacity: 1;
+			background-image: url('tetris.gif');			
+        }
+        @keyframes flicker {
+            from {
+                opacity: 0.9;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        header {
+            background-color: #333;
+            text-align: center;
+            padding: 10px;
+            margin-bottom: 20px;
+            animation: slideIn 2s ease-in forwards;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 1;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #1a1a1a;
+            padding: 20px;
+            border: 5px solid #333;
+            box-shadow: 0 0 10px #000;
+            animation: slideIn 1s ease-in forwards;
+        }
+        @keyframes slideIn {
+            from {
+				transform: translateY(-50px);
+                opacity: 1;
+            }
+            to {
+				transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        h1, h2, h3 {
+			font-family: 'Press Start 2P', cursive;
+            color: #ffcc00;
+            text-align: center;
+            border-bottom: 1px solid #ffcc00;
+            padding-bottom: 5px;
+            animation: neonGlow 0.5s ease-in-out infinite alternate;
+        }
+        @keyframes neonGlow {
+            from {
+                text-shadow: 0 0 10px #ffcc00, 0 0 20px #ffcc00, 0 0 30px #ffcc00;
+            }
+            to {
+                text-shadow: 0 0 20px #ffcc00, 0 0 30px #ffcc00, 0 0 40px #ffcc00;
+            }
+        }
+        p, ul, ol {
+            margin-bottom: 15px;
+            animation: flickerText 2s infinite alternate;
+			font-family: sans-serif; 
+            font-size: 20px; 
+            color: #ccc; 
+        }
+        @keyframes flickerText {
+            from {
+                opacity: 0.7;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .case-study {
+            margin-bottom: 30px;
+        }
+        .image-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        img {
+            max-width: 100%;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        }
+       footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #333;
+            color: #fff;
+            animation: blinkCursor 1s step-end infinite;
+			font-family: 'Press Start 2P'; 
+            font-size: 14px; 
+        }
+        @keyframes blinkCursor {
+            from, to {
+                border-color: transparent;
+            }
+            50% {
+                border-color: #fff;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>Proyecto Tetris</h1>
+    </header>
+    <div class="container">
+        <section id="descripcion">
+			<p>Integrantes:
+			<ul>
+				<li> Catalina González</li>
+				<li> Patricio Guzman</li>
+			</ul>
+			</p>
+            <h2>Descripción del Problema</h2>
+            <p>Tetris ofrece entretenimiento interactivo y desafío mental con su mecánica simple pero adictiva. Estimula la concentración, la coordinación mano-ojo y la toma de decisiones rápidas al manipular bloques para completar líneas y evitar que la pantalla se llene. Este juego no solo divierte, sino que también mejora habilidades cognitivas y proporciona un sentido de logro instantáneo. Desde su creación, ha sido reconocido por su impacto positivo en jugadores de todas las edades. </p>
+        </section>
+
+        <section id="analisis">
+            <h2>Análisis del Problema</h2>
+            <p>El juego de Tetris implica varios elementos:
+			<ul>
+				<li>Piezas móviles (tetrominós) compuestas por cuatro bloques cuadrados que caen desde la parte superior de la pantalla y deben ser rotados y colocados por el jugador para llenar líneas horizontales en el tablero</li>
+				<li>Un tablero de juego, espacio donde se desarrolla la acción del juego, mostrando las piezas en movimiento y lineas completadas. Provee retroalimentación al jugador sobre el estado del juego y las acciones tomadas.</li>
+				<li>Controles de usuario que determinan cómo interactúan las piezas y la jugabilidad aplicada en cada jugada</li>
+			</ul>
+			</p>
+        </section>
+
+        <section id="requerimientos">
+            <h2>Definición de Requerimientos</h2>
+            <div class="case-study">
+                <h3>Caso de Uso: Mover Pieza</h3>
+                <p><strong>Descripción:</strong> El jugador puede mover la pieza hacia la izquierda, derecha o hacia abajo.
+					<br><strong>Actor:</strong> Jugador.
+					<br><strong>Precondición:</strong> El juego Tetris está en curso y una pieza está en movimiento, el jugador tiene control sobre la pieza.
+					<br><strong>Flujo Principal:</strong> El jugador utiliza las teclas de flecha izquierda (←) y derecha (→) para mover la pieza horizontalmente dentro del tablero. La pieza se desplaza una posición a la izquierda o derecha según la tecla presionada. El movimiento se realiza de forma continua hasta que la pieza llega a un borde del tablero o colisiona con otra pieza.
+					<br><strong>Postcondiciones:</strong> La pieza se posiciona correctamente dentro del tablero según las acciones del jugador.
+				</p>
+                <div class="image-container">
+                    <img src="moverr.png" alt="Captura de pantalla: Movimiento de pieza">
+                    <p>Captura de pantalla mostrando la pieza moviéndose hacia la izquierda correctamente.</p>
+                </div>
+            </div>
+            
+            <div class="case-study">
+                <h3>Caso de Uso: Rotar Pieza</h3>
+                <p><strong>Descripción:</strong> El jugador puede rotar la pieza actual en sentido horario o antihorario.
+					<br><strong>Actor:</strong> Jugador.
+					<br><strong>Precondición:</strong> El juego Tetris está en curso y una pieza está en movimiento, el jugador tiene control sobre la pieza.
+					<br><strong>Flujo Principal:</strong> El jugador utiliza la tecla de flecha hacia arriba (↑) para rotar la pieza en sentido horario. La pieza tetrominó cambia su orientación en incrementos de 90 grados cada vez que se presiona la tecla. La rotación se realiza dentro del espacio disponible del tablero y puede ajustarse para encajar mejor en los espacios vacíos.
+					<br><strong>Postcondiciones:</strong> La pieza cambia su orientación de manera correcta y se ajusta dentro del tablero según las acciones del jugador.
+				</p>
+                <div class="image-container">
+                    <img src="rotar.png" alt="Captura de pantalla: Rotación de pieza">
+                    <p>Captura de pantalla de una pieza rotando sin colisiones.</p>
+                </div>
+            </div>
+            
+            <div class="case-study">
+                <h3>Caso de Uso: Eliminar Líneas Completas</h3>
+                <p><strong>Descripción:</strong> Cuando una línea se completa, se elimina y se incrementa el puntaje del jugador.
+					<br><strong>Actor:</strong> Sistema.
+					<br><strong>Precondición:</strong> Durante el juego, una o más líneas horizontales están completamente llenas de tetrominós, el juego está en curso y las líneas completas deben ser identificadas y eliminadas.
+					<br><strong>Flujo Principal:</strong> Cuando se completa una línea horizontal con tetrominós, se identifica automáticamente como lista para eliminarse. La línea completa se elimina del tablero, y todas las piezas superiores a esta línea caen una posición hacia abajo para llenar el espacio vacío. El juego continúa con la siguiente pieza en juego.
+					<br><strong>Postcondiciones:</strong> Las líneas completas se eliminan correctamente del tablero. El juego continúa sin interrupciones.
+				</p>
+                <div class="image-container">
+                    <img src="linea.png" alt="Captura de pantalla: Eliminación de líneas">
+                    <p>Captura de pantalla mostrando la eliminación correcta de una línea completa.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="diseno">
+            <h2>Diseño</h2>
+            <h3>Diagrama de Clases</h3>
+            <div class="image-container">
+                <img src="UML_Tetris.drawio.png" alt="Diagrama de Clases">
+                <p>La clase GameBoardPanel tiene una relación con GameWindow y Tetromino, y maneja la lógica principal del juego, mientras que GameWindow gestiona la configuración y visualización de la ventana del juego, Tetromino maneja las formas y coordenadas de las piezas del juego.<br></p>
+            </div>
+            
+            <h3>Diagrama de Secuencia (Rotar Pieza)</h3>
+            <div class="image-container">
+                <img src="diagrama.drawio.png" alt="Diagrama de Secuencia">
+            </div>
+			<ul>
+				<br><li> Jugador -> GameBoardPanel: El jugador presiona la tecla de flecha hacia arriba (↑) para rotar la pieza.</li>
+				<br><li> GameBoardPanel -> Tetromino: Se llama al método keyPressed() en el GameBoardPanel, donde se verifica si el juego está en curso y se ejecuta la siguiente acción.</li>
+				<br><li> GameBoardPanel -> Tetromino: Luego se llama al método isMovable() para verificar si la pieza puede moverse a la nueva posición después de la rotación.</li>
+				<br><li> Tetromino -> GameBoardPanel: Si la rotación es posible, se realiza la rotación efectiva llamando a rotateRight() en el objeto Tetromino.</li>
+				<br><li> GameBoardPanel -> Tetromino: Después de la rotación, se actualiza la interfaz de usuario llamando al método actualizar() en el GameBoardPanel para reflejar visualmente la nueva orientación de la pieza en el tablero.</li>
+				<br><li> GameBoardPanel -> Interfaz de Usuario: Este último paso implica una interacción implícita donde la interfaz de usuario se actualiza visualmente para mostrar la nueva orientación de la pieza rotada.</li><br>
+			</ul>
+        </section>
+
+        <section id="pruebas">
+            <h2>Pruebas</h2>
+            <div class="case-study">
+                <h3>Resultados de Pruebas</h3>
+				<div class="video-container">
+					<video width="480" height="640" controls loop>
+						<source src="gameplay.mp4" type="video/mp4">
+						Tu navegador no soporta el elemento de video.
+					</video>
+				</div>
+            </div>   
+            
+            <h3>Dificultades</h3>
+            <p>
+			<ul>
+			<li>Implementación de las Rotaciones de Tetrominos: Una de las dificultades clave es la implementación precisa de las rotaciones de los Tetrominos, asegurando que cada pieza gire correctamente sin colisionar con otras piezas o los bordes del tablero. El código debe calcular las nuevas coordenadas tras la rotación y verificar si hay colisiones, revirtiendo la rotación si es necesario. Este proyecto aborda esta dificultad con métodos específicos para rotar piezas y verificaciones de colisión que aseguran rotaciones fluidas y válidas.</li>
+			<li>Gestión de la Interfaz Gráfica del Usuario: Diseñar una GUI responsiva para el juego es un desafío significativo. La GUI debe actualizarse en tiempo real para reflejar el movimiento de las piezas y las líneas completadas, sin retrasos ni parpadeos. Además, debe ser estéticamente agradable y responder de manera inmediata a las acciones del usuario. El proyecto utiliza JFrame y GridLayout para gestionar la ventana del juego y GameBoardPanel para dibujar y actualizar el tablero en tiempo real.</li>
+			</ul>
+			</p>
+        </section>
+		
+		<style>
+    /* Estilos CSS para centrar el video verticalmente */
+    .video-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .video-container video {
+        max-width: 100%; /* Ajusta el tamaño máximo según sea necesario */
+        max-height: 100%; /* Ajusta el tamaño máximo según sea necesario */
+        box-shadow: 0 0 5px rgba(0,0,0,0.2); /* Sombra ligera */
+    }
+</style>
+    </div>
+
+    <footer>
+        &copy; 2024 ELO239: Programación Orientada a Objetos
+    </footer>
+</body>
+</html>
