@@ -4,50 +4,50 @@ import java.util.Random;
 
 public class Tetromino {
     enum Tetrominoes {
-        NO_BLOCK, Z_SHAPE, S_SHAPE, I_SHAPE, T_SHAPE, O_SHAPE, L_SHAPE, J_SHAPE
+        NO_BLOCK, Forma_Z, Forma_S, Forma_I, Forma_T, Forma_Cuadrado, Forma_L, Forma_J
     }
 
     ;
 
     private Tetrominoes tetrominoes;                       // almacena el tipo actual de pieza
     private int coords[][];                                // forma actual de la pieza
-    private int tetrominoTable[][][];                      // tabla que almacena las coordenadas de todas las formas posibles
+    private int tetrominoTabla[][][];                      // tabla que almacena las coordenadas de todas las formas posibles
 
     // CONSTRUCTOR 
     public Tetromino() {
         coords = new int[4][2];
-        tetrominoTable = new int[][][]{        
-                {{0, 0}, {0, 0}, {0, 0}, {0, 0}},         // NO_BLOCK
-                {{0, -1}, {0, 0}, {-1, 0}, {-1, 1}},      // Z_SHAPE
-                {{0, -1}, {0, 0}, {1, 0}, {1, 1}},        // S_SHAPE
-                {{0, -1}, {0, 0}, {0, 1}, {0, 2}},        // I_SHAPE
-                {{-1, 0}, {0, 0}, {1, 0}, {0, 1}},        // T_SHAPE
-                {{0, 0}, {1, 0}, {0, 1}, {1, 1}},         // O_SHAPE
-                {{-1, -1}, {0, -1}, {0, 0}, {0, 1}},      // L_SHAPE
-                {{1, -1}, {0, -1}, {0, 0}, {0, 1}}        // J_SHAPE
+        tetrominoTabla = new int[][][]{
+                {{0, 0}, {0, 0}, {0, 0}, {0, 0}},         //
+                {{0, -1}, {0, 0}, {-1, 0}, {-1, 1}},      // Forma Z
+                {{0, -1}, {0, 0}, {1, 0}, {1, 1}},        // Forma S
+                {{0, -1}, {0, 0}, {0, 1}, {0, 2}},        // Forma I
+                {{-1, 0}, {0, 0}, {1, 0}, {0, 1}},        // Forma T
+                {{0, 0}, {1, 0}, {0, 1}, {1, 1}},         // Forma CUADRADO
+                {{-1, -1}, {0, -1}, {0, 0}, {0, 1}},      // Forma L
+                {{1, -1}, {0, -1}, {0, 0}, {0, 1}}        // Forma J
         };
 
-        setShape(Tetrominoes.NO_BLOCK);
+        ElegirForma(Tetrominoes.NO_BLOCK);
     }
 
         // METODOS para establecer formas
-    public void setShape(Tetrominoes tetromino) {                            
+    public void ElegirForma(Tetrominoes tetromino) {
         for (int i = 0; i < coords.length; i++) {                
             for (int j = 0; j < coords[i].length; j++) {
-                coords[i][j] = tetrominoTable[tetromino.ordinal()][i][j];    // establece las coordenadas de la pieza actual basado en el tipo proporcionado
+                coords[i][j] = tetrominoTabla[tetromino.ordinal()][i][j];    // establece las coordenadas de la pieza actual basado en el tipo proporcionado
             }
         }
 
         tetrominoes = tetromino;
     }
 
-    public void setRandomShape() {                        // establece una forma aleatoria para la pieza
+    public void FormaRandom() {                        // establece una forma aleatoria para la pieza
         Random r = new Random();
         int x = Math.abs(r.nextInt()) % 7 + 1;
-        setShape(Tetrominoes.values()[x]);
+        ElegirForma(Tetrominoes.values()[x]);
     }
 
-    public Tetrominoes getShape() {                        // devuelve el tipo de pieza actual
+    public Tetrominoes getForma() {                        // devuelve el tipo de pieza actual
         return tetrominoes;
     }
 
@@ -87,7 +87,7 @@ public class Tetromino {
 
     // ROTACIONES
     public Tetromino rotateLeft() {
-        if (tetrominoes == Tetrominoes.O_SHAPE) {
+        if (tetrominoes == Tetrominoes.Forma_Cuadrado) {
             return this;
         }
 
@@ -103,7 +103,7 @@ public class Tetromino {
     }
 
     public Tetromino rotateRight() {
-        if (tetrominoes == Tetrominoes.O_SHAPE) {
+        if (tetrominoes == Tetrominoes.Forma_Cuadrado) {
             return this;
         }
 

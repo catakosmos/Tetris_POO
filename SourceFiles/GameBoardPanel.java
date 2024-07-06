@@ -13,38 +13,38 @@ import javafx.util.Duration;
 
 public class GameBoardPanel extends Canvas {
 
-    private static final int BoardWidth = 10;
-    private static final int BoardHeight = 22;
+    private static final int AnchoJuego = 10;
+    private static final int AlturaJuego = 22;
 
     private Timeline timeline;
-    private boolean isFallingDone = false;
-    private boolean isStarted = false;
-    private boolean isPaused = false;
-    private int currentScore = 0;
+    private boolean PiezaColocada = false;
+    private boolean Start = false;
+    private boolean Pausado = false;
+    private int PuntacionActual = 0;
 
-    private int curX = 0;
-    private int curY = 0;
+    private int CoordenadaXactual = 0;
+    private int CoordenadaYActual = 0;
 
-    private Tetromino curBlock;
+    private Tetromino PiezaActual;
 
-    private Tetromino.Tetrominoes[] gameBoard;
-    private Color[] colorTable;
+    private Tetromino.Tetrominoes[] Tablero;
+    private Color[] ColorBloque;
 
-    private String currentStatus;
-    private int currentTimerResolution;
+    private String EstadoJuego;
+    private int VelocidadTimerActual;
 
-    private GameWindow tetrisFrame;
+    private GameWindow VentanaJuego;
 
-    public GameBoardPanel(GameWindow tetrisFrame, int timerResolution) {
+    public GameBoardPanel(GameWindow VentanaJuego, int VelocidadTimer) {
         super(400, 800);  // establece el tamaño del canvas
-        curBlock = new Tetromino();
-        timeline = new Timeline(new KeyFrame(Duration.millis(timerResolution), e -> actionPerformed()));
+        PiezaActual = new Tetromino();
+        timeline = new Timeline(new KeyFrame(Duration.millis(VelocidadTimer), e -> actionPerformed()));
         timeline.setCycleCount(Timeline.INDEFINITE);
-        currentTimerResolution = timerResolution;
+        VelocidadTimerActual = VelocidadTimer;
 
-        gameBoard = new Tetromino.Tetrominoes[BoardWidth * BoardHeight];
+        Tablero = new Tetromino.Tetrominoes[AnchoJuego * AlturaJuego];
 
-        colorTable = new Color[]{
+        ColorBloque = new Color[]{
                 Color.BLACK,      // Color for NO_BLOCK
                 Color.CYAN,       // Color for I
                 Color.BLUE,       // Color for J
@@ -55,311 +55,313 @@ public class GameBoardPanel extends Canvas {
                 Color.RED         // Color for Z
         };
 
-        setOnKeyPressed(this::handleKeyPress);
+        setOnKeyPressed(this::AccionTeclado);
         setFocusTraversable(true); // Permitir que el canvas tenga el foco
 
-        this.tetrisFrame = tetrisFrame;
-        initBoard();
+        this.VentanaJuego = VentanaJuego;
+        IniciarTablero();
         requestFocus(); // Solicitar el foco para capturar eventos de teclado
     }
 
-    private void handleKeyPress(KeyEvent event) {
-        if (!isStarted || curBlock.getShape() == Tetromino.Tetrominoes.NO_BLOCK) {
+    private void AccionTeclado(KeyEvent event) {
+        if (!Start || PiezaActual.getForma() == Tetromino.Tetrominoes.NO_BLOCK) {
             return;
         }
 
         KeyCode keycode = event.getCode();
 
         if (keycode == KeyCode.P) {
-            pause();
+            Pausa();
             return;
         }
 
-        if (isPaused) {
+        if (Pausado) {
             return;
         }
 
         switch (keycode) {
             case LEFT:
-                isMovable(curBlock, curX - 1, curY);
+                Movible(PiezaActual, CoordenadaXactual - 1, CoordenadaYActual);
                 break;
             case RIGHT:
-                isMovable(curBlock, curX + 1, curY);
+                Movible(PiezaActual, CoordenadaXactual + 1, CoordenadaYActual);
                 break;
             case UP:
-                isMovable(curBlock.rotateRight(), curX, curY);
+                Movible(PiezaActual.rotateRight(), CoordenadaXactual, CoordenadaYActual);
                 break;
             case DOWN:
-                advanceOneLine();
+                BajarUnaLinea();
                 break;
             case SPACE:
-                advanceToEnd();
+                ColocarALFinal();
                 break;
             default:
                 break;
         }
     }
 
-    private void setResolution() {
-        switch (currentScore / 10) {
+    private void CambiarVelociad() {
+        switch (PuntacionActual / 10) {
             case 10:
-                currentTimerResolution = 100;
+                VelocidadTimerActual = 100;
                 break;
             case 9:
-                currentTimerResolution = 130;
+                VelocidadTimerActual = 130;
                 break;
             case 8:
-                currentTimerResolution = 160;
+                VelocidadTimerActual = 160;
                 break;
             case 7:
-                currentTimerResolution = 190;
+                VelocidadTimerActual = 190;
                 break;
             case 6:
-                currentTimerResolution = 220;
+                VelocidadTimerActual = 220;
                 break;
             case 5:
-                currentTimerResolution = 250;
+                VelocidadTimerActual = 250;
                 break;
             case 4:
-                currentTimerResolution = 280;
+                VelocidadTimerActual = 280;
                 break;
             case 3:
-                currentTimerResolution = 310;
+                VelocidadTimerActual = 310;
                 break;
             case 2:
-                currentTimerResolution = 340;
+                VelocidadTimerActual = 340;
                 break;
             case 1:
-                currentTimerResolution = 370;
+                VelocidadTimerActual = 370;
                 break;
             case 0:
-                currentTimerResolution = 400;
+                VelocidadTimerActual = 400;
                 break;
         }
 
-        timeline.getKeyFrames().set(0, new KeyFrame(Duration.millis(currentTimerResolution), e -> actionPerformed()));
+        timeline.getKeyFrames().set(0, new KeyFrame(Duration.millis(VelocidadTimerActual), e -> actionPerformed()));
     }
 
-    private void initBoard() {
-        for (int i = 0; i < BoardWidth * BoardHeight; i++) {
-            gameBoard[i] = Tetromino.Tetrominoes.NO_BLOCK;
+    private void IniciarTablero() {
+        for (int i = 0; i < AnchoJuego * AlturaJuego; i++) {
+            Tablero[i] = Tetromino.Tetrominoes.NO_BLOCK;
         }
     }
 
     private void actionPerformed() {
-        if (isFallingDone) {
-            isFallingDone = !isFallingDone;
-            newTetromino();
+        if (PiezaColocada) {
+            PiezaColocada = !PiezaColocada;
+            NuevaPieza();
         } else {
-            advanceOneLine();
+            BajarUnaLinea();
         }
     }
 
     public void start() {
-        if (isPaused) {
+        if (Pausado) {
             return;
         }
 
-        isStarted = true;
-        isFallingDone = false;
-        currentScore = 0;
-        initBoard();
+        Start = true;
+        PiezaColocada = false;
+        PuntacionActual = 0;
+        IniciarTablero();
 
-        newTetromino();
+        NuevaPieza();
         timeline.play();
     }
 
-    public void pause() {
-        if (!isStarted) {
+    public void Pausa() {
+        if (!Start) {
             return;
         }
 
-        isPaused = !isPaused;
-        if (isPaused) {
+        Pausado = !Pausado;
+        if (Pausado) {
             timeline.pause();
         } else {
             timeline.play();
         }
 
-        draw();
+        DibujarJuego();
     }
 
-    private int blockWidth() {
-        return (int) getWidth() / BoardWidth;
+    private int AnchoBloque() {
+        return (int) getWidth() / AnchoJuego;
     }
 
-    private int blockHeight() {
-        return (int) getHeight() / BoardHeight;
+    private int AlturaBloque() {
+        return (int) getHeight() / AlturaJuego;
     }
 
-    private Tetromino.Tetrominoes curTetrominoPos(int x, int y) {
-        return gameBoard[(y * BoardWidth) + x];
+    private Tetromino.Tetrominoes PosicionPieza(int x, int y) {
+        return Tablero[(y * AnchoJuego) + x];
     }
 
-    private void draw() {
+    private void DibujarJuego() {
         GraphicsContext gc = getGraphicsContext2D();
         gc.clearRect(0, 0, getWidth(), getHeight());
 
-        if (!isPaused) {
-            currentStatus = "Score: " + currentScore;
+        if (!Pausado) {
+            EstadoJuego = "Score: " + PuntacionActual;
         } else {
-            currentStatus = "PAUSED";
+            EstadoJuego = "PAUSA";
         }
 
         gc.setFill(Color.BLACK);
         gc.setFont(new Font("Consolas", 28));
-        gc.fillText(currentStatus, 15, 35);
+        gc.fillText(EstadoJuego, 15, 35);
 
-        int boardTop = (int) getHeight() - BoardHeight * blockHeight();
+        int InicioTablero = (int) getHeight() - AlturaJuego * AlturaBloque();
 
-        int tempY = curY;
+        int tempY = CoordenadaYActual;
         while (tempY > 0) {
-            if (!atomIsMovable(curBlock, curX, tempY - 1, false))
+            if (!BloqueMovible(PiezaActual, CoordenadaXactual, tempY - 1, false))
                 break;
             tempY--;
         }
         for (int i = 0; i < 4; i++) {
-            int x = curX + curBlock.getX(i);
-            int y = tempY - curBlock.getY(i);
-            drawTetromino(gc, 0 + x * blockWidth(), boardTop + (BoardHeight - y - 1) * blockHeight(), curBlock.getShape(), true);
+            int x = CoordenadaXactual + PiezaActual.getX(i);
+            int y = tempY - PiezaActual.getY(i);
+            PrintTetromino(gc, 0 + x * AnchoBloque(), InicioTablero + (AlturaJuego - y - 1) * AlturaBloque(), PiezaActual.getForma(), true);
         }
 
-        for (int i = 0; i < BoardHeight; i++) {
-            for (int j = 0; j < BoardWidth; j++) {
-                Tetromino.Tetrominoes shape = curTetrominoPos(j, BoardHeight - i - 1);
-                if (shape != Tetromino.Tetrominoes.NO_BLOCK)
-                    drawTetromino(gc, 0 + j * blockWidth(), boardTop + i * blockHeight(), shape, false);
+        for (int i = 0; i < AlturaJuego; i++) {
+            for (int j = 0; j < AnchoJuego; j++) {
+                Tetromino.Tetrominoes Forma = PosicionPieza(j, AlturaJuego - i - 1);
+                if (Forma != Tetromino.Tetrominoes.NO_BLOCK)
+                    PrintTetromino(gc, 0 + j * AnchoBloque(), InicioTablero + i * AlturaBloque(), Forma, false);
             }
         }
 
-        if (curBlock.getShape() != Tetromino.Tetrominoes.NO_BLOCK) {
+        if (PiezaActual.getForma() != Tetromino.Tetrominoes.NO_BLOCK) {
             for (int i = 0; i < 4; i++) {
-                int x = curX + curBlock.getX(i);
-                int y = curY - curBlock.getY(i);
-                drawTetromino(gc, 0 + x * blockWidth(), boardTop + (BoardHeight - y - 1) * blockHeight(), curBlock.getShape(), false);
+                int x = CoordenadaXactual + PiezaActual.getX(i);
+                int y = CoordenadaYActual - PiezaActual.getY(i);
+                PrintTetromino(gc, 0 + x * AnchoBloque(), InicioTablero + (AlturaJuego - y - 1) * AlturaBloque(), PiezaActual.getForma(), false);
             }
         }
     }
 
-    private void drawTetromino(GraphicsContext gc, int x, int y, Tetromino.Tetrominoes bs, boolean isShadow) {
-        Color curColor = colorTable[bs.ordinal()];
+    private void PrintTetromino(GraphicsContext gc, int x, int y, Tetromino.Tetrominoes bs, boolean Sombra) {
+        Color curColor = ColorBloque[bs.ordinal()];
 
-        if (!isShadow) {
+        if (!Sombra) {
             gc.setFill(curColor);
-            gc.fillRect(x + 1, y + 1, blockWidth() - 2, blockHeight() - 2);
+            gc.fillRect(x + 1, y + 1, AnchoBloque() - 2, AlturaBloque() - 2);
         } else {
             gc.setFill(curColor.darker().darker());
-            gc.fillRect(x + 1, y + 1, blockWidth() - 2, blockHeight() - 2);
+            gc.fillRect(x + 1, y + 1, AnchoBloque() - 2, AlturaBloque() - 2);
         }
     }
 
-    private void removeFullLines() {
-        int fullLines = 0;
+    private void RemoverLineas() {
+        int lineasLLenas = 0;
 
-        for (int i = BoardHeight - 1; i >= 0; i--) {
+        for (int i = AlturaJuego - 1; i >= 0; i--) {
             boolean isFull = true;
 
-            for (int j = 0; j < BoardWidth; j++) {
-                if (curTetrominoPos(j, i) == Tetromino.Tetrominoes.NO_BLOCK) {
+            for (int j = 0; j < AnchoJuego; j++) {
+                if (PosicionPieza(j, i) == Tetromino.Tetrominoes.NO_BLOCK) {
                     isFull = false;
                     break;
                 }
             }
 
             if (isFull) {
-                ++fullLines;
-                for (int k = i; k < BoardHeight - 1; k++) {
-                    for (int l = 0; l < BoardWidth; ++l)
-                        gameBoard[(k * BoardWidth) + l] = curTetrominoPos(l, k + 1);
+                ++lineasLLenas;
+                for (int k = i; k < AlturaJuego - 1; k++) {
+                    for (int l = 0; l < AnchoJuego; ++l)
+                        Tablero[(k * AnchoJuego) + l] = PosicionPieza(l, k + 1);
                 }
             }
         }
 
-        if (fullLines > 0) {
-            currentScore += fullLines;
-            isFallingDone = true;
-            curBlock.setShape(Tetromino.Tetrominoes.NO_BLOCK);
-            setResolution();
-            draw();
+        if (lineasLLenas > 0) {
+            PuntacionActual += lineasLLenas;
+            PiezaColocada = true;
+            PiezaActual.ElegirForma(Tetromino.Tetrominoes.NO_BLOCK);
+            CambiarVelociad();
+            DibujarJuego();
         }
     }
 
-    private boolean atomIsMovable(Tetromino chkBlock, int chkX, int chkY, boolean flag) {
+    private boolean BloqueMovible(Tetromino BloqueActual, int Xactual, int Yactual, boolean Boleano) {
         for (int i = 0; i < 4; i++) {
-            int x = chkX + chkBlock.getX(i);
-            int y = chkY - chkBlock.getY(i);
-            if (x < 0 || x >= BoardWidth || y < 0 || y >= BoardHeight)
+            int x = Xactual + BloqueActual.getX(i);
+            int y = Yactual - BloqueActual.getY(i);
+            if (x < 0 || x >= AnchoJuego || y < 0 || y >= AlturaJuego)
                 return false;
-            if (curTetrominoPos(x, y) != Tetromino.Tetrominoes.NO_BLOCK) {
+            if (PosicionPieza(x, y) != Tetromino.Tetrominoes.NO_BLOCK) {
                 return false;
             }
         }
 
-        if (flag) {
-            curBlock = chkBlock;
-            curX = chkX;
-            curY = chkY;
-            draw();
+        if (Boleano) {
+            PiezaActual = BloqueActual;
+            CoordenadaXactual = Xactual;
+            CoordenadaYActual = Yactual;
+            DibujarJuego();
         }
 
         return true;
     }
 
-    private boolean isMovable(Tetromino chkBlock, int chkX, int chkY) {
-        return atomIsMovable(chkBlock, chkX, chkY, true);
+    private boolean Movible(Tetromino chkBlock, int chkX, int chkY) {
+        return BloqueMovible(chkBlock, chkX, chkY, true);
     }
 
-    private void newTetromino() {
-        curBlock.setRandomShape();
-        curX = BoardWidth / 2 + 1;
-        curY = BoardHeight - 1 + curBlock.minY();
+    private void NuevaPieza() {
+        PiezaActual.FormaRandom();
+        CoordenadaXactual = AnchoJuego / 2 + 1;
+        CoordenadaYActual = AlturaJuego - 1 + PiezaActual.minY();
 
-        if (!isMovable(curBlock, curX, curY)) {
-            curBlock.setShape(Tetromino.Tetrominoes.NO_BLOCK);
+        if (!Movible(PiezaActual, CoordenadaXactual, CoordenadaYActual)) {
+            PiezaActual.ElegirForma(Tetromino.Tetrominoes.NO_BLOCK);
             timeline.stop();
-            isStarted = false;
-            GameOver(currentScore);
+            Start = false;
+            GameOver(PuntacionActual);
         }
     }
 
-    private void tetrominoFixed() {
+    private void PiezaFijada() {
         for (int i = 0; i < 4; i++) {
-            int x = curX + curBlock.getX(i);
-            int y = curY - curBlock.getY(i);
-            gameBoard[(y * BoardWidth) + x] = curBlock.getShape();
+            int x = CoordenadaXactual + PiezaActual.getX(i);
+            int y = CoordenadaYActual - PiezaActual.getY(i);
+            Tablero[(y * AnchoJuego) + x] = PiezaActual.getForma();
         }
 
-        removeFullLines();
+        RemoverLineas();
 
-        if (!isFallingDone) {
-            newTetromino();
-        }
-    }
-
-    private void advanceOneLine() {
-        if (!isMovable(curBlock, curX, curY - 1)) {
-            tetrominoFixed();
+        if (!PiezaColocada) {
+            NuevaPieza();
         }
     }
 
-    private void advanceToEnd() {
-        int tempY = curY;
+    private void BajarUnaLinea() {
+        if (!Movible(PiezaActual, CoordenadaXactual, CoordenadaYActual - 1)) {
+            PiezaFijada();
+        }
+    }
+
+    private void ColocarALFinal() {
+        int tempY = CoordenadaYActual;
         while (tempY > 0) {
-            if (!isMovable(curBlock, curX, tempY - 1))
+            if (!Movible(PiezaActual, CoordenadaXactual, tempY - 1))
                 break;
             --tempY;
         }
-        tetrominoFixed();
+        PiezaFijada();
     }
 
-    private void GameOver(int dbScore) {
+
+
+    private void GameOver(int Puntuacion) {
         // Usar un diálogo de JavaFX para el Game Over
         javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
         alert.setTitle("Game Over!");
         alert.setHeaderText(null);
-        alert.setContentText("Puntuación obtenida: " + dbScore);
+        alert.setContentText("Puntuación obtenida: " + Puntuacion);
         alert.showAndWait();
-        setResolution();
+        CambiarVelociad();
         start();
     }
 }
